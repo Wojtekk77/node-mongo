@@ -1,0 +1,20 @@
+{
+  "name": "node-mongo",
+  "version": "1.0.0",
+  "description": "first app 01.04.2021",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Wojtek W",
+  "license": "MIT",
+  "dependencies": {
+    "@handlebars/allow-prototype-access": "^1.0.3",
+    "body-parser": "^1.19.0",
+    "express": "^4.17.1",
+    "express-handlebars": "^5.3.0",
+    "handlebars": "^4.7.7",
+    "mongodb": "^3.6.5",
+    "path": "^0.12.7"
+  }
+}
