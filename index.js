@@ -20,17 +20,19 @@ app.listen(3000, () => {
   console.log("Hello World, server start at port 3000");
 });
 
-app.get("/", (req, res) => {
-  res.send(`
-    <h1>Hello World jup</h1>
-    <h4>click here to get access <a href="/student/list">Download</a></h4>
-    <form action="/quotes" method="POST">
-        <input type="text" placeholder="name" name="name">
-        <input type="text" placeholder="quote" name="quote">
-        <button type="submit">Submit</button>
-    </form>
-  `);
-});
+app.set("view engine", "ejs");
+
+// app.get("/", (req, res) => {
+//   res.send(`
+//     <h1>Hello World jup</h1>
+//     <h4>click here to get access <a href="/student/list">Download</a></h4>
+//     <form action="/quotes" method="POST">
+//         <input type="text" placeholder="name" name="name">
+//         <input type="text" placeholder="quote" name="quote">
+//         <button type="submit">Submit</button>
+//     </form>
+//   `);
+// });
 
 const mongoConnectionString =
   "mongodb+srv://Wojtek:MongoPass@cluster0.uhmy8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
@@ -44,12 +46,17 @@ MongoClient.connect(mongoConnectionString, {
     const db = client.db("star-wars-quotes");
     const quotesCollection = db.collection("quotes");
     // app.use(/* ... */);
-    // app.get(/* ... */);
+    app.get("/", (req, res) => {
+      db.collection("quotes").find().toArray().then(/* ... */).catch(/* ... */);
+      res.render("index.ejs", {});
+    });
+
     app.post("/quotes", (req, res) => {
       quotesCollection
         .insertOne(req.body)
         .then((result) => {
           console.log(result);
+          res.redirect("/");
         })
         .catch((error) => console.error(error));
     });
