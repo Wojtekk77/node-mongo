@@ -107,12 +107,14 @@ app.delete("/kitten/:id", async (request, response) => {
   }
 });
 
-app.get("/kitten/:name", async (request, response) => {
+app.get("/kitten/how_many_names", async (request, response) => {
   try {
     const result = await Kitten.aggregate([
       { $match: {} },
-      { $group: { _id: "$name", total: { $sum: "$todo" } } },
+      { $group: { _id: "$name" } },
+      { $count: "name" },
     ]);
+
     response.send(result);
   } catch (error) {
     response.status(500).send(error);
