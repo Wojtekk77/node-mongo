@@ -111,10 +111,26 @@ app.get("/kitten/how_many_names", async (request, response) => {
   try {
     const result = await Kitten.aggregate([
       { $match: {} },
-      { $group: { _id: "$name" } },
-      { $count: "name" },
+      { $group: { _id: "$name", nameCount: { $sum: 2 } } },
     ]);
 
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+const kitten_stuff_schema = new mongoose.Schema({
+  item: { type: String },
+  price: { type: Number },
+  quantity: { type: Number },
+});
+
+const Kitten_stuff = mongoose.model("kitten_stuff", kitten_stuff_schema);
+
+app.get("/kitten_stuff", async (request, response) => {
+  try {
+    const result = await Kitten_stuff.find();
     response.send(result);
   } catch (error) {
     response.status(500).send(error);
