@@ -22,18 +22,6 @@ app.listen(3000, () => {
 
 app.set("view engine", "ejs");
 
-// app.get("/", (req, res) => {
-//   res.send(`
-//     <h1>Hello World jup</h1>
-//     <h4>click here to get access <a href="/student/list">Download</a></h4>
-//     <form action="/quotes" method="POST">
-//         <input type="text" placeholder="name" name="name">
-//         <input type="text" placeholder="quote" name="quote">
-//         <button type="submit">Submit</button>
-//     </form>
-//   `);
-// });
-
 const mongoConnectionString =
   "mongodb+srv://Wojtek:MongoPass@cluster0.uhmy8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const MongoClient = require("mongodb").MongoClient;
@@ -47,8 +35,13 @@ MongoClient.connect(mongoConnectionString, {
     const quotesCollection = db.collection("quotes");
     // app.use(/* ... */);
     app.get("/", (req, res) => {
-      db.collection("quotes").find().toArray().then(/* ... */).catch(/* ... */);
-      res.render("index.ejs", {});
+      db.collection("quotes")
+        .find()
+        .toArray()
+        .then((results) => {
+          res.render("index.ejs", { quotes: results });
+        })
+        .catch(/* ... */);
     });
 
     app.post("/quotes", (req, res) => {
