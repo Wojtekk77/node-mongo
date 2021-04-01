@@ -34,6 +34,7 @@ db.on("error", (err) => {
 
 const kittySchema = new mongoose.Schema({
   name: { type: String, unique: true },
+  todo: { type: String },
 });
 
 kittySchema.methods.speak = function () {
@@ -45,40 +46,31 @@ kittySchema.methods.speak = function () {
 
 const Kitten = mongoose.model("Kitten", kittySchema);
 
-const silence = new Kitten({ name: "Silence is golden" });
-console.log(silence.name); // 'Silence'
-silence.save(function (err, fluffy) {
-  if (err) return console.error(err);
-  fluffy.speak();
-});
+// const silence = new Kitten({ name: "Silence is golden" });
+// console.log(silence.name); // 'Silence'
+// silence.save(function (err, fluffy) {
+//   if (err) return console.error(err);
+//   fluffy.speak();
+// });
 
-const fluffy = new Kitten({ name: "fluffy" });
-fluffy.speak(); // "Meow name is fluffy"
+// const fluffy = new Kitten({ name: "fluffy" });
+// fluffy.speak(); // "Meow name is fluffy"
 
 // fluffy.save(function (err, fluffy) {
 //   if (err) return console.error(err);
 //   fluffy.speak();
 // });
-
+//
 // Kitten.find(function (err, kittens) {
 //   if (err) return console.error(err);
 //   console.log(kittens);
 // });
 
-Kitten.find({ name: "fluffy" }, console.log("callback if we find them"));
+// Kitten.find({ name: "fluffy" }, console.log("callback if we find them"));
 
 app.get("/kittens", async (request, response) => {
   try {
-    var result = await Kitten.find().exec();
-    response.send(result);
-  } catch (error) {
-    response.status(500).send(error);
-  }
-});
-
-app.post("/kittens", async (request, response) => {
-  try {
-    var result = await Kitten.find().exec();
+    const result = await Kitten.find();
     response.send(result);
   } catch (error) {
     response.status(500).send(error);
@@ -97,9 +89,30 @@ app.post("/kitten", async (request, response) => {
 
 app.put("/kitten/:id", async (request, response) => {
   try {
-    const kitty = await Kitten.findById(request.params.id).exec();
-    kitty.set({ name: "dwadwajiodwjioawjiodajiowda" });
+    const kitty = await Kitten.findById({ _id: request.params.id });
+    kitty.set({ name: "name changed via post method", todo: "via put method" });
     const result = await kitty.save();
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+app.delete("/kitten/:id", async (request, response) => {
+  try {
+    const result = await Kitten.deleteOne({ _id: request.params.id });
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+app.get("/kitten/:name", async (request, response) => {
+  try {
+    const result = await Kitten.aggregate([
+      { $match: {} },
+      { $group: { _id: "$name", total: { $sum: "$todo" } } },
+    ]);
     response.send(result);
   } catch (error) {
     response.status(500).send(error);
