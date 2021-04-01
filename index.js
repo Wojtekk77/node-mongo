@@ -5,7 +5,7 @@ const exphbs = require("express-handlebars");
 const {
   allowInsecurePrototypeAccess,
 } = require("@handlebars/allow-prototype-access");
-// const bodyparser = require("body-parser");
+const bodyparser = require("body-parser");
 
 var app = express();
 
@@ -21,6 +21,7 @@ app.listen(3000, () => {
 });
 
 app.set("view engine", "ejs");
+app.use(express.static("public"));
 
 const mongoConnectionString =
   "mongodb+srv://Wojtek:MongoPass@cluster0.uhmy8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
@@ -34,14 +35,10 @@ MongoClient.connect(mongoConnectionString, {
     const db = client.db("star-wars-quotes");
     const quotesCollection = db.collection("quotes");
     // app.use(/* ... */);
-    app.get("/", (req, res) => {
-      db.collection("quotes")
-        .find()
-        .toArray()
-        .then((results) => {
-          res.render("index.ejs", { quotes: results });
-        })
-        .catch(/* ... */);
+    app.get("/", async (req, res) => {
+      const results = await db.collection("quotes").find().toArray();
+
+      res.render("index.ejs", { quotes: results });
     });
 
     app.post("/quotes", (req, res) => {
@@ -53,6 +50,27 @@ MongoClient.connect(mongoConnectionString, {
         })
         .catch((error) => console.error(error));
     });
+
+    app.put("/quotes", (req, res) => {
+      quotesCollection
+        .findOneAndUpdate(
+          { name: "yoda" },
+          {
+            $set: {
+              name: req.body.name,
+              quote: req.body.quote,
+            },
+          },
+          {
+            upsert: true,
+          }
+        )
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((error) => console.error(error));
+    });
+
     // app.listen(/* ... */);
   })
   .catch((error) => console.error(error));
