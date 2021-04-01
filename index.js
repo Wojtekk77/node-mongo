@@ -120,17 +120,17 @@ app.get("/kitten/how_many_names", async (request, response) => {
   }
 });
 
-const kitten_stuff_schema = new mongoose.Schema({
+const kittens_stuff_schema = new mongoose.Schema({
   item: { type: String },
   price: { type: Number },
   quantity: { type: Number },
 });
 
-const Kitten_stuff = mongoose.model("kitten_stuff", kitten_stuff_schema);
+const Kittens_stuffs = mongoose.model("kittens_stuffs", kittens_stuff_schema);
 
-app.get("/kitten_stuff", async (request, response) => {
+app.get("/kittens_stuffs", async (request, response) => {
   try {
-    const result = await Kitten_stuff.find();
+    const result = await Kittens_stuffs.find({});
     response.send(result);
   } catch (error) {
     response.status(500).send(error);
