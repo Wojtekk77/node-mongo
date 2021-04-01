@@ -23,5 +23,15 @@ app.listen(3000, () => {
 
 app.get("/", (req, res) => {
   res.send(`<h1>Hello World jup</h1>
-  <h4>click here to get access <a href="/student/list">Download</a></h4>`);
+  <h4>click here to get access <a href="/student/list">Download</a></h4>
+  <form action="/quotes" method="POST">
+  <input type="text" placeholder="name" name="name">
+  <input type="text" placeholder="quote" name="quote">
+  <button type="submit">Submit</button>
+</form>
+  `);
+});
+
+app.post("/quotes", (req, res) => {
+  console.log("Hellooooooooooooooooo!");
 });
