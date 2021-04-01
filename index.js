@@ -136,3 +136,17 @@ app.get("/kittens_stuffs", async (request, response) => {
     response.status(500).send(error);
   }
 });
+
+app.post("/kittens_stuffs", async (request, response) => {
+  try {
+    const kitty = new Kittens_stuffs({
+      item: request.body.item,
+      price: request.body.price,
+      quantity: request.body.quantity,
+    });
+    const result = await kitty.save();
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
