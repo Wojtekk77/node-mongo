@@ -6,57 +6,18 @@ const {
   allowInsecurePrototypeAccess,
 } = require("@handlebars/allow-prototype-access");
 const bodyparser = require("body-parser");
-const Character = require("./models/Character");
-
-async function runCode() {
-  //   const ken = new Character({
-  //     name: "Ken",
-  //     quote: "Guren Enjinkyaku",
-  //   });
-
-  //   const doc2 = await ken.save();
-
-  // <-lets find one by name->
-  //   const yoda = await Character.findOne({ name: "Yoda" });
-  //   console.log(yoda);
-
-  // const ryu = await Character.find({ name: 'Yoda' })
-  // console.log(ryu)
-
-  // const chars = await Character.find()
-  // console.log(chars)
-
-  const ryu = await Character.findOne({ name: "Yoda" });
-  ryu.specials = ["Hadoken", "Shoryuken", "Tatsumaki Senpukyaku"];
-
-  const doc = await ryu.save();
-  console.log(doc);
-}
-
-runCode().catch((error) => {
-  console.error(error);
-});
-
 var app = express();
-
-//app.use(bodyparser.urlencoded({ extended: true }));
-//app.use(bodyparser.json());
-//deprecated methods, now we use below
-//my// mongo "mongodb+srv://cluster0.uhmy8.mongodb.net/myFirstDatabase" --username Wojtek
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.listen(3000, () => {
   console.log("Hello World, server start at port 3000");
 });
-
 app.set("view engine", "ejs");
 app.use(express.static("public"));
 
 const mongoose = require("mongoose");
 const url =
   "mongodb+srv://Wojtek:MongoPass@cluster0.uhmy8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
@@ -68,66 +29,37 @@ db.on("error", (err) => {
   console.error("connection error:", err);
 });
 
-// const mongoConnectionString =
-//   "mongodb+srv://Wojtek:MongoPass@cluster0.uhmy8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
-// const MongoClient = require("mongodb").MongoClient;
-// MongoClient.connect(mongoConnectionString, {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// })
-//   .then((client) => {
-//     console.log("Connected to Database");
-//     const db = client.db("star-wars-quotes");
-//     const quotesCollection = db.collection("quotes");
-//     // app.use(/* ... */);
-//     app.get("/", async (req, res) => {
-//       const results = await db.collection("quotes").find().toArray();
+const kittySchema = new mongoose.Schema({
+  name: { type: String, unique: true },
+});
 
-//       res.render("index.ejs", { quotes: results });
-//     });
+kittySchema.methods.speak = function () {
+  const greeting = this.name
+    ? "Meow name is " + this.name
+    : "I don't have a name";
+  console.log(greeting);
+};
 
-//     app.post("/quotes", (req, res) => {
-//       quotesCollection
-//         .insertOne(req.body)
-//         .then((result) => {
-//           console.log(result);
-//           res.redirect("/");
-//         })
-//         .catch((error) => console.error(error));
-//     });
+const Kitten = mongoose.model("Kitten", kittySchema);
 
-//     app.put("/quotes", (req, res) => {
-//       quotesCollection
-//         .findOneAndUpdate(
-//           { name: "yoda" },
-//           {
-//             $set: {
-//               name: req.body.name,
-//               quote: req.body.quote,
-//             },
-//           },
-//           {
-//             upsert: true,
-//           }
-//         )
-//         .then((result) => {
-//           res.json("Success");
-//         })
-//         .catch((error) => console.error(error));
-//     });
+const silence = new Kitten({ name: "Silence is golden" });
+console.log(silence.name); // 'Silence'
+silence.save(function (err, fluffy) {
+  if (err) return console.error(err);
+  fluffy.speak();
+});
 
-//     app.delete("/quotes", (req, res) => {
-//       quotesCollection
-//         .deleteOne({ name: req.body.name })
-//         .then((result) => {
-//           if (result.deletedCount === 0) {
-//             return res.json("No quote to delete");
-//           }
-//           res.json(`Deleted Darth Vadar's quote`);
-//         })
-//         .catch((error) => console.error(error));
-//     });
+const fluffy = new Kitten({ name: "fluffy" });
+fluffy.speak(); // "Meow name is fluffy"
 
-//     // app.listen(/* ... */);
-//   })
-//   .catch((error) => console.error(error));
+fluffy.save(function (err, fluffy) {
+  if (err) return console.error(err);
+  fluffy.speak();
+});
+
+Kitten.find(function (err, kittens) {
+  if (err) return console.error(err);
+  console.log(kittens);
+});
+
+Kitten.find({ name: "fluffy" }, console.log("callback if we find them"));
