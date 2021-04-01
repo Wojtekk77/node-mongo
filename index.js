@@ -67,11 +67,41 @@ fluffy.speak(); // "Meow name is fluffy"
 
 Kitten.find({ name: "fluffy" }, console.log("callback if we find them"));
 
-app.get("/", async (request, response) => {
-    try {
-        var result = await Kitten.find().exec();
-        response.send(result);
-    } catch (error) {
-        response.status(500).send(error);
-    }
+app.get("/kittens", async (request, response) => {
+  try {
+    var result = await Kitten.find().exec();
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+app.post("/kittens", async (request, response) => {
+  try {
+    var result = await Kitten.find().exec();
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+app.post("/kitten", async (request, response) => {
+  try {
+    const kitty = new Kitten({ name: "name from post api" });
+    const result = await kitty.save();
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+app.put("/kitten/:id", async (request, response) => {
+  try {
+    const kitty = await Kitten.findById(request.params.id).exec();
+    kitty.set({ name: "dwadwajiodwjioawjiodajiowda" });
+    const result = await kitty.save();
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
 });
