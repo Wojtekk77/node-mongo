@@ -32,9 +32,6 @@ app.get("/", (req, res) => {
   `);
 });
 
-app.post("/quotes", (req, res) => {
-  console.log("Hellooooooooooooooooo!");
-});
 const mongoConnectionString =
   "mongodb+srv://Wojtek:MongoPass@cluster0.uhmy8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const MongoClient = require("mongodb").MongoClient;
@@ -44,5 +41,18 @@ MongoClient.connect(mongoConnectionString, {
 })
   .then((client) => {
     console.log("Connected to Database");
+    const db = client.db("star-wars-quotes");
+    const quotesCollection = db.collection("quotes");
+    // app.use(/* ... */);
+    // app.get(/* ... */);
+    app.post("/quotes", (req, res) => {
+      quotesCollection
+        .insertOne(req.body)
+        .then((result) => {
+          console.log(result);
+        })
+        .catch((error) => console.error(error));
+    });
+    // app.listen(/* ... */);
   })
   .catch((error) => console.error(error));
