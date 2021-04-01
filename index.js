@@ -36,7 +36,7 @@ app.post("/quotes", (req, res) => {
   console.log("Hellooooooooooooooooo!");
 });
 const mongoConnectionString =
-  "mongodb+srv://cluster0.uhmy8.mongodb.net/myFirstDatabase";
+  "mongodb+srv://Wojtek:MongoPass@cluster0.uhmy8.mongodb.net/myFirstDatabase?retryWrites=true&w=majority";
 const MongoClient = require("mongodb").MongoClient;
 MongoClient.connect(
   mongoConnectionString,
@@ -44,5 +44,8 @@ MongoClient.connect(
     useNewUrlParser: true,
     useUnifiedTopology: true,
   },
-  (err, client) => {}
+  (err, client) => {
+    if (err) return console.error(err);
+    console.log("Connected to Database");
+  }
 );
