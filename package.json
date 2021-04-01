@@ -4,7 +4,8 @@
   "description": "first app 01.04.2021",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon server.js"
   },
   "author": "Wojtek W",
   "license": "MIT",
@@ -16,5 +17,8 @@
     "handlebars": "^4.7.7",
     "mongodb": "^3.6.5",
     "path": "^0.12.7"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.7"
   }
 }
