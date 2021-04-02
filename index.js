@@ -126,10 +126,12 @@ app.post("/kittens_stuffs", async (request, response) => {
   try {
     console.log(request.body);
     const kitty = new KittenStuff({
-      _id:request.body._id,
       item: request.body.item,
       price: request.body.price,
       quantity: request.body.quantity,
+      author: request.body.author,
+      title: request.body.title,
+      fans: request.body.fans,
     });
     const result = await kitty.save();
     response.send(result);
@@ -153,9 +155,11 @@ app.post("/kitten_job", async (request, response) => {
   try {
     console.log(request.body);
     const kitty = new KittenJob({
-      _id: request.body._id,
       jobName: request.body.jobName,
       description: request.body.description,
+      name: request.body.name,
+      ages: request.body.ages,
+      stories: request.body.stories,
     });
     const result = await kitty.save();
     response.send(result);
@@ -167,16 +171,19 @@ app.post("/kitten_job", async (request, response) => {
 app.get("/kitten_lookup", async (request, response) => {
   try {
     //KittenJob nalezy do kolekcji kittenjobs
-    const result = await KittenJob.aggregate({
-      $lookup: {
-        localField: "_id", // pole po którym łączymy kolekcje kittenjobs
-        from: 'kittenstuffs', //kolekcja którą chcemy łączyć dodatkowo
-        foreignField: "_id", //pole po którym łączymy
-        as: "myFields", // alias/nazwa
-      }
-    });
+    const result = await KittenJob.aggregate([
+      {
+        $lookup: {
+          from: "kittenstuffs",
+          localField: "jobName",
+          foreignField: "item",
+          as: "myJoinedFields",
+        },
+      },
+    ]);
     response.send(result);
   } catch (error) {
+    console.log(error);
     response.status(500).send(error);
   }
 });
