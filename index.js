@@ -5,11 +5,14 @@ const exphbs = require("express-handlebars");
 const {
   allowInsecurePrototypeAccess,
 } = require("@handlebars/allow-prototype-access");
-const bodyparser = require("body-parser");
 var app = express();
-
 app.use(express.urlencoded({ extended: true }));
+// app.use(express.json());
+// Parse JSON bodies (as sent by API clients)
 app.use(express.json());
+
+// Access the parse results as request.body
+
 app.listen(3000, () => {
   console.log("Hello World, server start at port 3000");
 });
@@ -139,6 +142,7 @@ app.get("/kittens_stuffs", async (request, response) => {
 
 app.post("/kittens_stuffs", async (request, response) => {
   try {
+    console.log(request.body);
     const kitty = new Kittens_stuffs({
       item: request.body.item,
       price: request.body.price,
@@ -150,3 +154,4 @@ app.post("/kittens_stuffs", async (request, response) => {
     response.status(500).send(error);
   }
 });
+
