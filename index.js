@@ -35,20 +35,6 @@ db.on("error", (err) => {
   console.error("connection error:", err);
 });
 
-const kittySchema = new mongoose.Schema({
-  name: { type: String, unique: true },
-  todo: { type: String },
-});
-
-kittySchema.methods.speak = function () {
-  const greeting = this.name
-    ? "Meow name is " + this.name
-    : "I don't have a name";
-  console.log(greeting);
-};
-
-const Kitten = mongoose.model("Kitten", kittySchema);
-
 // const silence = new Kitten({ name: "Silence is golden" });
 // console.log(silence.name); // 'Silence'
 // silence.save(function (err, fluffy) {
@@ -70,6 +56,8 @@ const Kitten = mongoose.model("Kitten", kittySchema);
 // });
 
 // Kitten.find({ name: "fluffy" }, console.log("callback if we find them"));
+
+const Kitten = require("./models/Kitten");
 
 app.get("/kittens", async (request, response) => {
   try {
@@ -123,17 +111,11 @@ app.get("/kitten/how_many_names", async (request, response) => {
   }
 });
 
-const kittens_stuff_schema = new mongoose.Schema({
-  item: { type: String },
-  price: { type: Number },
-  quantity: { type: Number },
-});
-
-const Kittens_stuffs = mongoose.model("kittens_stuffs", kittens_stuff_schema);
+const KittenStuff = require("./models/KittenStuff");
 
 app.get("/kittens_stuffs", async (request, response) => {
   try {
-    const result = await Kittens_stuffs.find({});
+    const result = await KittenStuff.find({});
     response.send(result);
   } catch (error) {
     response.status(500).send(error);
@@ -143,7 +125,8 @@ app.get("/kittens_stuffs", async (request, response) => {
 app.post("/kittens_stuffs", async (request, response) => {
   try {
     console.log(request.body);
-    const kitty = new Kittens_stuffs({
+    const kitty = new KittenStuff({
+      _id:request.body._id,
       item: request.body.item,
       price: request.body.price,
       quantity: request.body.quantity,
@@ -155,3 +138,45 @@ app.post("/kittens_stuffs", async (request, response) => {
   }
 });
 
+const KittenJob = require("./models/KittenJob");
+
+app.get("/kitten_job", async (request, response) => {
+  try {
+    const result = await KittenJob.find({});
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+app.post("/kitten_job", async (request, response) => {
+  try {
+    console.log(request.body);
+    const kitty = new KittenJob({
+      _id: request.body._id,
+      jobName: request.body.jobName,
+      description: request.body.description,
+    });
+    const result = await kitty.save();
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
+
+app.get("/kitten_lookup", async (request, response) => {
+  try {
+    //KittenJob nalezy do kolekcji kittenjobs
+    const result = await KittenJob.aggregate({
+      $lookup: {
+        localField: "_id", // pole po którym łączymy kolekcje kittenjobs
+        from: 'kittenstuffs', //kolekcja którą chcemy łączyć dodatkowo
+        foreignField: "_id", //pole po którym łączymy
+        as: "myFields", // alias/nazwa
+      }
+    });
+    response.send(result);
+  } catch (error) {
+    response.status(500).send(error);
+  }
+});
